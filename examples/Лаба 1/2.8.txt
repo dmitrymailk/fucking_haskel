@@ -1,0 +1,29 @@
+--d:: (Double, Double) -> (Double, Double) -> Double
+--isRectangular:: (Double, Double) -> (Double, Double) -> (Double, Double) -> Bool
+isRectangular2:: (Double, Double) -> (Double, Double) -> (Double, Double) -> Bool
+vector:: (Double, Double) -> (Double, Double) -> (Double, Double)
+skalar:: (Double, Double) -> (Double, Double) -> Double
+
+--d (x1, y1) (x2, y2) = sqrt((x1-x2)^2 + (y1-y2)^2)
+
+--isRectangular (x1, y1) (x2, y2) (x3, y3) = 
+--    (a^2+b^2 == c^2) where
+--        a = d (x1, y1) (x2, y2)
+--        b = d (x1, y1) (x3, y3)
+--        c = d (x2, y2) (x3, y3)
+    
+vector (x1, y1) (x2, y2) = (x2 - x1, y2 - y1)
+
+skalar (x1, y1) (x2, y2) = x1 * x2 + y1 * y2
+
+isRectangular2 (x1, y1) (x2, y2) (x3, y3) = 
+    (skalar a b == 0 || skalar b c == 0 || skalar a c == 0) where
+        a = vector (x1, y1) (x2, y2)
+        b = vector (x1, y1) (x3, y3)
+        c = vector (x2, y2) (x3, y3)
+
+main = do
+    --print(isRectangular (0,0) (2,0) (0,2))
+    --print(isRectangular (0,0) (3,0) (0,4))
+    print(isRectangular2 (0,0) (2,0) (0,2))
+    print(isRectangular2 (0,0) (3,0) (0,4))

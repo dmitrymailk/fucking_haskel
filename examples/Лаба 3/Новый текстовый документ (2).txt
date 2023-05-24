@@ -1,0 +1,65 @@
+import Data.Typeable
+
+type Triangle = ((Double, Double), (Double, Double), (Double, Double))  --deriving (Eq, Show)
+type Circle = ((Double, Double), Double) -- (center_x, center_y) r
+type Rectangle = ((Double, Double), (Double, Double)) -- (точка левого верха, точка правого низа)
+
+data Font = Courier | Lucida | Fixedsys deriving (Eq, Show)
+type Lable = ((Double, Double), String, Font)
+t::Triangle
+c::Circle
+r::Rectangle
+l::Lable
+t = ((0,1), (0,0), (1,0))
+c = ((1,1), 2)
+r = ((2,2), (1,1))
+l = ((1,1), "123", Courier)
+l2 = ((1,1), "123", Courier)
+
+eqFont :: Lable -> Lable -> Bool
+toString :: Lable -> String
+toString ((x,y), s, f) = s
+
+eqFont ((x1,y1), s1, f1) ((x2,y2), s2, f2) = f1 == f2
+
+getSizeFront :: Font -> Double
+getSizeFront f 
+    | f == Courier  =1.05
+    | f == Lucida   =1.1
+    | f == Fixedsys =1.2
+    | otherwise     =0.5 -- во всех других случаях
+
+area :: Triangle -> Double
+area ((x1, y1), (x2, y2), (x3, y3)) = 0.5 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2))
+area2 :: Rectangle -> Double
+area2 ((x1, y1), (x2, y2)) = (x2 - x1) * (y1 - y2)
+area3 :: Circle -> Double
+area3 ((_, _), r) = 2 * pi * r 
+area4 :: Lable -> Double
+area4 ((_,_), s, f) = (getSizeFront f) * fromIntegral(length s)  
+
+--data Figure = TriangleObject Triangle | CircleObject Circle | RectangleObject Rectangle | LableObject Lable deriving (Eq, Show)
+data Figure = TriangleO Triangle | CircleO Circle | RectangleO Rectangle | LableO Lable deriving (Eq, Show)
+
+foo :: Figure -> Bool
+foo RectangleO = True
+foo x     = False
+
+getRectangle :: [Figure] -> [Rectangle]
+getRectangle [] = []
+getRectangle (x_type:x:xs) 
+    | foo x_type == True = [x] ++ getRectangle xs
+    | otherwise     = getRectangle xs
+
+fs::[Figure]
+fs = [TriangleO ((0,1), (0,0), (1,0)), CircleO ((1,1), 2), LableO ((1,1), "123", Courier), RectangleO ((2,2), (1,1))]
+main :: IO()
+
+main = do
+    putStrLn $ show t ++ " площадь = " ++ show(area t)
+    putStrLn $ show r ++ " площадь = " ++ show(area2 r)
+    putStrLn $ show c ++ " площадь = " ++ show(area3 c)
+    putStrLn $ show l ++ " площадь = " ++ show(area4 l)
+    putStrLn $ getRectangle fs
+    --putStrLn $ show getRectangle fs
+    --putStrLn $ Typeable t

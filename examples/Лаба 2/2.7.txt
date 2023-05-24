@@ -1,0 +1,12 @@
+removeEmpty :: [String] -> [String]
+
+removeEmpty [] = []
+removeEmpty (x:xs) = 
+    if x == "" then
+        removeEmpty xs
+    else
+        [x] ++ removeEmpty xs
+
+main = do
+    print $ ["", "Hello", "", "", "World!"]
+    print $ removeEmpty  ["", "Hello", "", "", "World!"]

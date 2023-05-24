@@ -1,0 +1,9 @@
+isTriangle:: Double -> Double -> Double -> Bool
+
+isTriangle x y z = 
+    x + y >= z && x + z >= y && y + z >= x
+
+main = do
+    print(isTriangle 1 2 3)
+    print(isTriangle 1 2 4)
+    print(isTriangle 4 2 3)

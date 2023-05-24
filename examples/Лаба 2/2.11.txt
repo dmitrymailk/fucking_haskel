@@ -1,0 +1,11 @@
+substitute :: Char -> Char -> String -> String
+
+substitute _ _ [] = []
+substitute c1 c2 (x:xs) = 
+    if c1 == x then
+        [c2] ++ substitute c1 c2 xs
+    else
+        [x] ++ substitute c1 c2 xs
+
+main = do
+    print $ substitute 'e' 'i' "eigenvalue"

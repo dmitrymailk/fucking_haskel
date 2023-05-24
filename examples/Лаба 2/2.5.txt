@@ -1,0 +1,17 @@
+divInt :: Int -> Int -> Int
+twopow :: Int -> Int
+
+divInt a b = floor $ fromIntegral a / fromIntegral b 
+
+twopow 0 = 1
+twopow n = 
+    if even n then -- если n чётное
+        a * a
+    else
+        2 * a * a
+    where
+        a = twopow $ divInt n 2
+
+main = do
+    print $ twopow 2
+    print $ twopow 5

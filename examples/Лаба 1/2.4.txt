@@ -1,0 +1,15 @@
+bothTrue :: Bool -> Bool -> Bool
+bothTrue a b =
+    if a == b then
+        if a /= False then
+            True
+        else
+            False
+    else
+        False
+
+main = do
+    print(bothTrue True True)
+    print(bothTrue False True)
+    print(bothTrue True False)
+    print(bothTrue False False)

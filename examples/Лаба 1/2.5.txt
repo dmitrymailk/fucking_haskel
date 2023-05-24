@@ -1,0 +1,15 @@
+solve2::Double->Double->(Bool,Double)
+solve2 a b = 
+    if a == 0 then
+        if b == 0 then
+            (True, 0.0)
+        else
+            (False, 0.0)
+    else
+        (True, -b/a)
+
+
+main = do
+    print(solve2 0 0)
+    print(solve2 0 1)
+    print(solve2 1 4.1)

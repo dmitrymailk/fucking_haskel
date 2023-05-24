@@ -1,0 +1,127 @@
+import Data.Typeable
+
+type Triangle = ((Double, Double), (Double, Double), (Double, Double))  --deriving (Eq, Show)
+type Circle = ((Double, Double), Double) -- (center_x, center_y) r
+type Rectangle = ((Double, Double), (Double, Double)) -- (точка левого верха, точка правого низа)
+
+data Font = Courier | Lucida | Fixedsys deriving (Eq, Show)
+type Lable = ((Double, Double), String, Font)
+data Figure = TriangleO Triangle | CircleO Circle | RectangleO Rectangle | LableO Lable deriving (Eq, Show)
+
+getType :: Figure -> String
+getType (TriangleO _) = "Triangle"
+getType (CircleO _) = "Circle"
+getType (LableO _) = "Lable"
+getType (RectangleO _) = "Rectangle"
+
+-- <AREA>
+
+getSizeFont :: Font -> Double
+getSizeFont f 
+    | f == Courier  = 1.05
+    | f == Lucida   = 1.1
+    | f == Fixedsys = 1.2
+    | otherwise     = 0.5 -- во всех остальных случаях
+
+
+areaTriangle :: Triangle -> Double
+areaTriangle ((x1, y1), (x2, y2), (x3, y3)) = 0.5 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2))
+
+areaRectangle :: Rectangle -> Double
+areaRectangle ((x1, y1), (x2, y2)) = (x2 - x1) * (y1 - y2)
+
+areaCircle :: Circle -> Double
+areaCircle ((_, _), r) = 2 * pi * r 
+
+areaLable :: Lable -> Double
+areaLable ((_, _), s, f) = (getSizeFont f) * fromIntegral(length s)  
+
+area :: Figure -> Double
+area (TriangleO x) = areaTriangle x
+area (CircleO x) = areaCircle x
+area (RectangleO x) = areaRectangle x
+area (LableO x) = areaLable x
+
+-- </AREA>
+-- <getRectangle>
+
+getRec :: Figure -> Rectangle
+getRec (RectangleO z) = z
+getRec z = error "Нельзя тип не RectangleO приобразовать в Rectangle"
+
+getRectangle :: [Figure] -> [Rectangle]
+getRectangle [] = []
+getRectangle (x:xs) 
+    | getType x == "Rectangle"  = [getRec x] ++ getRectangle xs
+    | otherwise                 = getRectangle xs
+
+-- </getRectangle>
+-- <getBound>
+
+getBoundRectangle :: Rectangle -> Rectangle
+getBoundRectangle x = x
+
+getBoundTriangle :: Triangle -> Rectangle
+getBoundTriangle ((x1, y1), (x2, y2), (x3, y3)) = ((min_x, max_y), (max_x, min_y))
+    where
+    min_x = min x1 (min x2 x3)
+    min_y = min y1 (min y2 y3)
+    max_x = max x1 (max x2 x3)
+    max_y = max y1 (max y2 y3)
+
+getBoundCircle :: Circle -> Rectangle
+getBoundCircle ((x, y), r) = ((x-r, y+r),(x+r, y-r))
+
+getBoundLable :: Lable -> Rectangle
+getBoundLable ((x, y), s, f) = ((x, y), (x + fromIntegral(length s), y - getSizeFont f))
+
+getBound :: Figure -> Rectangle
+getBound (TriangleO x) = getBoundTriangle x
+getBound (CircleO x) = getBoundCircle x
+getBound (RectangleO x) = getBoundRectangle x
+getBound (LableO x) = getBoundLable x
+
+-- </getBound>
+-- <getBounds>
+
+getBounds :: [Figure] -> [Rectangle]
+getBounds [] = []
+getBounds (x:xs) = [getBound x] ++ getBounds xs
+
+-- </getBounds>
+
+
+getElement :: [Figure] -> Int -> Figure
+getElement [] _ = error "Выход за пределы массива"
+getElement (x:xs) n
+    | n < 0     = error "Индекс < 0"
+    | n == 0    = x
+    | otherwise = getElement xs (n-1)
+
+fs::[Figure]
+fs= [  
+        TriangleO ((0,1), (0,0), (1,0)), 
+        CircleO ((1,1), 2), 
+        LableO ((1,1), "123", Courier), 
+        RectangleO ((2,2), (1,1))
+    ]
+        
+getFirst (x:_) = x
+
+main :: IO()
+main = do
+    putStrLn $ show t ++ " площадь = " ++ show(areaTriangle t)
+    putStrLn $ show r ++ " площадь = " ++ show(areaRectangle r)
+    putStrLn $ show c ++ " площадь = " ++ show(areaCircle c)
+    putStrLn $ show l ++ " площадь = " ++ show(areaLable l)
+    putStrLn $ "id=2 площадь = " ++ show(area(getElement fs 2))
+    putStrLn (show $ getType (getFirst fs))
+    putStrLn (show $ getRectangle fs)
+    putStrLn (show $ getBounds fs)
+    putStrLn (show $ getBound(getFirst fs))
+        where
+        t = ((0,1), (0,0), (1,0)) :: Triangle
+        c = ((1,1), 2) :: Circle
+        r = ((2,2), (1,1)) :: Rectangle
+        l = ((1,1), "123", Courier) :: Lable
+        l2= ((1,1), "123", Courier) :: Lable

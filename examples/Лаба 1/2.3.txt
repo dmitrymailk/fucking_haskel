@@ -1,0 +1,10 @@
+sort2 :: Int -> Int -> (Int, Int)
+sort2 a b =
+    if a > b then
+        (b, a)
+    else
+        (a, b)
+
+main = do
+    print(sort2 2 1)
+    print(sort2 1 2)

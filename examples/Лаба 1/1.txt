@@ -1,0 +1,32 @@
+main = do
+    print(a1)
+    print(a2)
+    print(a3)
+    print(a4)
+    print(a5)
+    print(a6)
+    print(a8)
+    print(a9)
+    print(a10)
+    where
+        a = 1
+        --((Char,Integer), String, [Double])
+        a1 = (('a',1), "sa", [1.2, 3.2])
+        --[(Double,Bool,(String,Integer))]
+        a2 = [(1.2, True, ("sv", 1)), (1.2, True, ("sv", 2))]
+        --([Integer],[Double],[(Bool,Char)])
+        a3 = ([1,2],[1.2,2.3],[(True, 'a'), (False, 'b')])
+        --[[[(Integer,Bool)]]]
+        a4 = [[[(1, False), (1, False)], [(1, False), (1, False)]], [[(1, False), (1, False)], [(1, False), (1, False)]]]
+        --(((Char,Char),Char),[String])
+        a5 = ((('a', 'b'), 'c'), ["sa", "as"])
+        --(([Double],[Bool]),[Integer])
+        a6 = (([1.2,2.3], [True, False]), [1,2])
+        --[Integer, (Integer,[Bool])]
+        --a7 = [1,(1,[True,False])
+        --(Bool,([Bool],[Integer]))
+        a8 = (False, ([True, False], [1,2]))
+        --[([Bool],[Double])]
+        a9 = [([True, False], [1.0,2.3]), ([True, False], [1.0,2.3])]
+        --[([Integer],[Char])]
+        a10 = [([1,2],['a','b']), ([1,2],['a','b'])]

@@ -1,0 +1,9 @@
+rever :: [Int] -> [Int]
+
+rever [] = []
+rever [x] = [x] -- если один элемиент
+rever (x1:x2:xs) = [x2, x1] ++ rever xs
+
+main = do
+    print $ rever [1..9]
+    print $ rever [1..10]

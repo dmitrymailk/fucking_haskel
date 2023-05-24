@@ -1,0 +1,10 @@
+sum' :: [Int] -> [Int] -> [Int]
+
+sum' [] y = y
+sum' x [] = x
+sum' (x:xs) (y:ys) = [x + y] ++ sum' xs ys
+
+main = do
+    print $ sum' [1..10] [2..5]
+    print $ sum' [1..10] [1..10]
+    print $ sum' [2..5] [1..10]

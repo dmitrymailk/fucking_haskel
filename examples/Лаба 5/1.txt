@@ -1,0 +1,35 @@
+mean :: [Double] -> Double 
+mean list = foldr (+) 0 list / fromIntegral (length list)
+
+scalar :: [Double] -> [Double] -> Double
+scalar list1 list2 = foldr (+) 0 (zipWith (*) list1 list2)
+
+countEven :: [Int] -> Int
+countEven list = length (filter (even) list)
+
+quickSort :: [Int] -> [Int]
+quickSort [] = []
+quickSort (x:xs) = (quickSort as) ++ [x] ++ (quickSort bs)
+    where
+        as = filter (<x) xs
+        bs = filter (>=x) xs
+        
+quickSort2 :: [Int] -> (Int -> Int -> Bool) -> [Int]
+quickSort2 [] _ = []
+quickSort2 (x:xs) f = (quickSort2 as f) ++ [x] ++ (quickSort2 bs f)
+    where
+        as = filter (\n -> n `f` x == True) xs
+        bs = filter (\n -> n `f` x == False) xs
+
+func1 :: Int -> Int -> Bool
+func1 a b = a < b
+func2 :: Int -> Int -> Bool
+func2 a b = a > b
+
+main = do
+    print $ mean [1..50]
+    print $ scalar [1..5] [5,4..1]
+    print $ countEven [1..6]
+    print $ quickSort [36,35..1]
+    print $ quickSort2 [36,35..1] func1
+    print $ quickSort2 [1..36] func2

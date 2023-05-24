@@ -1,0 +1,11 @@
+makePositive :: [Int] -> [Int]
+
+makePositive [] = []
+makePositive (x:xs) = 
+    if x < 0 then
+        [-x] ++ makePositive xs
+    else
+        [x] ++ makePositive xs
+
+main = do
+    print $ makePositive [-5..5]

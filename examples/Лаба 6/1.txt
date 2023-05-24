@@ -1,0 +1,8 @@
+main = do
+   putStrLn "x: "
+   input1 <- getLine
+   putStrLn "y: "
+   input2 <- getLine
+   let x = (read input1 :: Int)
+   let y = (read input2 :: Int)
+   putStrLn $ show x ++ "+" ++ show y ++ "=" ++ show (x + y)

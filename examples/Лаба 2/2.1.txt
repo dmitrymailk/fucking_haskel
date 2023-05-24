@@ -1,0 +1,11 @@
+sum' :: [Double] -> Double
+mean' :: [Double] -> Double
+
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+
+mean' x = sum' x / fromIntegral(length x)
+
+main = do
+    print $ mean' [1..10]
+    print $ mean' [6..10]

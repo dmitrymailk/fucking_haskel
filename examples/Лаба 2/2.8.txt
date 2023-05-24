@@ -1,0 +1,11 @@
+countTrue :: [Bool] -> Int
+
+countTrue [] = 0
+countTrue (x:xs) = 
+    if x == True then
+        1 + countTrue xs
+    else
+        countTrue xs
+
+main = do
+    print $ countTrue [True, True, False, False, True]

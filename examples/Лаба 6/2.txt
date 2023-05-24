@@ -1,0 +1,7 @@
+import System.Environment
+
+main = do
+    args <- getArgs
+    progName <- getProgName
+    print $ args
+    print $ progName

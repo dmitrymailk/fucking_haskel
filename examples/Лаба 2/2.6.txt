@@ -1,0 +1,11 @@
+removeOdd :: [Int] -> [Int]
+
+removeOdd [] = []
+removeOdd (x:xs) = 
+    if odd x then
+        removeOdd xs
+    else
+        [x] ++ removeOdd xs
+
+main = do
+    print $ removeOdd [1..10]

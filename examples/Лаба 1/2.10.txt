@@ -1,0 +1,11 @@
+isSorted:: Double -> Double -> Double -> Bool
+
+isSorted x y z = 
+    (x >= y && y >= z) || (x <= y && y <= z)
+
+main = do
+    print(isSorted 1 2 3)
+    print(isSorted 1 2 4)
+    print(isSorted 4 2 3)
+    print(isSorted 4 3 3)
+    print(isSorted 4 1 3)

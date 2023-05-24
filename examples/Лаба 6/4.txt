@@ -1,0 +1,10 @@
+import System.IO
+import Control.Monad
+
+main = do
+    handle <- (openFile "test.txt" ReadMode)
+    contents <- hGetContents handle
+    let single_lines = lines contents
+    let list = take 2 single_lines
+    print $ list
+    hClose handle

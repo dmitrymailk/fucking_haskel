@@ -1,0 +1,179 @@
+import Data.Typeable
+type Point2 = (Double, Double)
+type Vector2 = (Double, Double)
+
+data Font = Courier | Lucida | Fixedsys deriving (Eq, Show)
+
+type Triangle = (Point2, Point2, Point2)  --deriving (Eq, Show)
+type Circle = (Point2, Double) -- (center_x, center_y) r
+type Rectangle = (Point2, Point2) -- (точка левого верха, точка правого низа)
+type Lable = (Point2, String, Font)
+
+data Figure = TriangleO Triangle | CircleO Circle | RectangleO Rectangle | LableO Lable deriving (Eq, Show)
+
+getType :: Figure -> String
+getType (TriangleO _) = "Triangle"
+getType (CircleO _) = "Circle"
+getType (LableO _) = "Lable"
+getType (RectangleO _) = "Rectangle"
+
+-- <AREA>
+
+getSizeFont :: Font -> Double
+getSizeFont f 
+    | f == Courier  = 1.05
+    | f == Lucida   = 1.1
+    | f == Fixedsys = 1.2
+    | otherwise     = 0.5 -- во всех остальных случаях
+
+
+areaTriangle :: Triangle -> Double
+areaTriangle ((x1, y1), (x2, y2), (x3, y3)) = 0.5 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2))
+
+areaRectangle :: Rectangle -> Double
+areaRectangle ((x1, y1), (x2, y2)) = (x2 - x1) * (y1 - y2)
+
+areaCircle :: Circle -> Double
+areaCircle ((_, _), r) = 2 * pi * r 
+
+areaLable :: Lable -> Double
+areaLable ((_, _), s, f) = (getSizeFont f) * fromIntegral(length s)  
+
+area :: Figure -> Double
+area (TriangleO x) = areaTriangle x
+area (CircleO x) = areaCircle x
+area (RectangleO x) = areaRectangle x
+area (LableO x) = areaLable x
+
+-- </AREA>
+-- <getRectangle>
+
+isRect :: Figure -> Bool
+isRect f = case f of
+    RectangleO f -> True
+    _ -> False
+
+getRectangle :: [Figure] -> [Figure]
+getRectangle [] = []
+getRectangle x = filter (\f -> isRect f == True) x
+   
+    {-case x of
+    RectangleO x -> x : getRectangle xs
+    _ -> getRectangle xs-}
+
+
+-- </getRectangle>
+-- <getBound>
+
+getBoundRectangle :: Rectangle -> Rectangle
+getBoundRectangle x = x
+
+getBoundTriangle :: Triangle -> Rectangle
+getBoundTriangle ((x1, y1), (x2, y2), (x3, y3)) = ((min_x, max_y), (max_x, min_y))
+    where
+    min_x = min x1 (min x2 x3)
+    min_y = min y1 (min y2 y3)
+    max_x = max x1 (max x2 x3)
+    max_y = max y1 (max y2 y3)
+
+getBoundCircle :: Circle -> Rectangle
+getBoundCircle ((x, y), r) = ((x-r, y+r),(x+r, y-r))
+
+getBoundLable :: Lable -> Rectangle
+getBoundLable ((x, y), s, f) = ((x, y), (x + fromIntegral(length s), y - getSizeFont f))
+
+getBound :: Figure -> Rectangle
+getBound (TriangleO x) = getBoundTriangle x
+getBound (CircleO x) = getBoundCircle x
+getBound (RectangleO x) = getBoundRectangle x
+getBound (LableO x) = getBoundLable x
+
+-- </getBound>
+-- <getBounds>
+
+getBounds :: [Figure] -> [Rectangle]
+getBounds [] = []
+getBounds x = map (getBound) x
+--[getBound x] ++ getBounds xs
+
+-- </getBounds>
+-- <getFigure>
+
+isInner :: Rectangle -> Point2 -> Bool
+isInner ((x1, y1),(x2, y2)) (xp, yp) = xp >= x1 && xp <= x2 && yp >= y2 && yp <= y1
+
+getFigure :: [Figure] -> Point2 -> Maybe Figure-- вернёт позицию первого элемента, в область которого попали
+getFigure [] _ = Nothing -- если массив пуст - не нашли
+getFigure (f:fs) p =
+    if isInner (getBound f) p then
+        Just f
+    else
+        getFigure fs p
+
+-- </getFigure>
+-- <move>
+
+movePoint :: Point2 -> Vector2 -> Point2
+movePoint (xp, yp) (xv, yv) = (xp + xv, yp + yv)
+
+moveTriangle :: Triangle -> Vector2 -> Triangle
+moveTriangle ((x1, y1), (x2, y2), (x3, y3)) (xv, yv) = 
+    (movePoint (x1, y1) (xv, yv), movePoint (x2, y2) (xv, yv), movePoint (x3, y3) (xv, yv))
+
+moveCircle :: Circle -> Vector2 -> Circle
+moveCircle ((x, y), r) (xv, yv) = 
+    (movePoint (x, y) (xv, yv), r)
+    
+moveLable :: Lable -> Vector2 -> Lable
+moveLable ((x, y), s, f) (xv, yv) = 
+    (movePoint (x, y) (xv, yv), s, f)
+
+moveRectangle :: Rectangle -> Vector2 -> Rectangle
+moveRectangle ((x1, y1), (x2, y2)) (xv, yv) = 
+    (movePoint (x1, y1) (xv, yv), movePoint (x2, y2) (xv, yv))
+    
+move :: Figure -> Vector2 -> Figure
+move (TriangleO f) v = TriangleO (moveTriangle f v)
+move (CircleO f) v = CircleO (moveCircle f v)
+move (LableO f) v = LableO (moveLable f v)
+move (RectangleO f) v = RectangleO (moveRectangle f v)
+
+-- </move>
+
+getElement :: [Figure] -> Int -> Figure
+getElement [] _ = error "Выход за пределы массива"
+getElement (x:xs) n
+    | n < 0     = error "Индекс < 0"
+    | n == 0    = x
+    | otherwise = getElement xs (n-1)
+
+fs::[Figure]
+fs= [  
+        TriangleO ((0,1), (0,0), (1,0)), 
+        CircleO ((1,1), 2), 
+        LableO ((1,1), "123", Courier), 
+        RectangleO ((2,2), (1,1))
+    ]
+        
+getFirst (x:_) = x
+
+main :: IO()
+main = do
+    putStrLn $ show t ++ " площадь = " ++ show(areaTriangle t)
+    putStrLn $ show r ++ " площадь = " ++ show(areaRectangle r)
+    putStrLn $ show c ++ " площадь = " ++ show(areaCircle c)
+    putStrLn $ show l ++ " площадь = " ++ show(areaLable l)
+    putStrLn $ "id=2 площадь = " ++ show(area(getElement fs 2))
+    putStrLn (show $ getType (getFirst fs))
+    putStrLn (show $ getRectangle fs)
+    putStrLn (show $ getBounds fs)
+    putStrLn (show $ getBound(getFirst fs))
+    putStrLn (show $ getFigure fs (0.5,1))
+    putStrLn (show $ getFigure fs (1,2))
+    putStrLn (show $ move (getFirst fs) (1,1))
+        where
+        t = ((0,1), (0,0), (1,0)) :: Triangle
+        c = ((1,1), 2) :: Circle
+        r = ((2,2), (1,1)) :: Rectangle
+        l = ((1,1), "123", Courier) :: Lable
+        l2= ((1,1), "123", Courier) :: Lable

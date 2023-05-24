@@ -1,0 +1,87 @@
+type Pair = (String, Int)
+data Tree a b = End | Node a b (Tree a b) (Tree a b) deriving (Show)
+
+getMidIndex :: Int -> Maybe Int
+getMidIndex n 
+    | n < 1 = Nothing
+    | otherwise = Just 
+        (if even n then
+            round ((fromIntegral n) / 2.0)
+        else
+            floor ((fromIntegral n) / 2.0))
+
+
+take_last :: Int -> [Pair] -> [Pair]
+take_last _ [] = []
+take_last n (x:xs)
+    | n == (length xs)  = xs
+    | otherwise = take_last n xs
+    
+
+splitList :: [Pair] -> ([Pair], Maybe Pair, [Pair])
+splitList [] = ([], Nothing, [])
+splitList list = (left, Just mid, right)
+    where
+        Just mid_index = getMidIndex(length list)
+        left = take mid_index list
+        mid = list !! mid_index
+        right = take_last (if even (length list) then mid_index - 1 else mid_index) list
+    
+    
+toTree :: [Pair] -> Tree String Int
+toTree [] = End
+toTree list = Node key value (toTree left) (toTree right)
+    where 
+        (left, Just (key, value), right) = splitList list
+
+
+find :: Tree String Int -> String -> Maybe Int
+find End _ = Nothing
+find (Node key value left_tree right_tree) key_find
+    | key_find == key = Just value
+    | key_find < key = find left_tree key_find
+    | key_find > key = find right_tree key_find
+
+
+exists :: Tree String Int -> String -> Bool
+exists End _ = False
+exists (Node key value left_tree right_tree) key_exists
+    | key_exists == key = True
+    | key_exists < key = exists left_tree key_exists
+    | key_exists > key = exists right_tree key_exists
+    
+    
+toList :: Tree String Int -> [Pair]
+toList End = []
+toList (Node key value left_tree right_tree)
+    = (toList left_tree) ++ [(key, value)] ++ (toList right_tree)
+
+
+insert :: Pair -> [Pair] -> [Pair]
+insert x [] = [x]
+insert (key, value) ((p_key, p_value):ps)
+    | key > p_key     = (p_key, p_value) : insert (key, value) ps
+    | otherwise = (key, value) : (p_key, p_value) : ps
+
+
+add :: Pair -> Tree String Int -> Tree String Int
+add (key, value) tree
+    | exists tree key == True = error "Нельзя добавить ключ, который уже существует"
+    | otherwise = new_tree
+        where 
+        list = toList tree
+        new_tree = toTree(insert (key, value) list)
+
+
+main = do
+    print $ splitList [("1",1), ("2",1), ("3",1), ("4",1), ("5",1)]
+    print $ splitList [("1",1), ("2",1), ("3",1), ("4",1), ("5",1), ("6",1)]
+    print $ toTree [("1",1), ("2",1), ("3",1), ("4",1), ("5",1), ("6",1)]
+    print $ find End "3"
+    print $ find (toTree [("1",1), ("2",1), ("3",(-2)), ("4",1), ("5",1), ("6",1)]) "7"
+    print $ exists (toTree [("1",1), ("2",1), ("3",(-2)), ("4",1), ("5",1), ("6",1)]) "0"
+    print $ toList (toTree [("1",1), ("2",1), ("3",(-2)), ("4",1), ("5",1), ("6",1)])
+    print $ insert ("0", 1) [("1",1), ("2",1), ("3",1), ("4",1), ("5",1), ("6",1)]
+    print $ toList(add ("22", 1) tree)
+        where
+        tree = toTree [("1",1), ("2",1), ("3",(-2)), ("4",1), ("5",1), ("6",1)]

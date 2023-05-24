@@ -1,0 +1,11 @@
+delete' :: Char -> String -> String
+
+delete' _ [] = []
+delete' c (x:xs) = 
+    if c == x then
+        delete' c xs
+    else
+        [x] ++ delete' c xs
+
+main = do
+    print $ delete' 'l' "Hello world!"
